@@ -1,0 +1,11 @@
+<form method="POST">
+    <label for="new_location_id">Select Location:</label>
+    <select name="new_location_id" id="new_location_id" required>
+        {% for location in locations %}
+        <option value="{{ location.id }}">{{ location.name }}</option>
+        {% endfor %}
+    </select>
+    <label for="quantity_to_transfer">Quantity to Transfer:</label>
+    <input type="number" name="quantity_to_transfer" id="quantity_to_transfer" min="1" required>
+    <button type="submit">Initiate Transfer</button>
+</form>
