@@ -35,7 +35,7 @@ This project was developed independently as a technical challenge and operationa
 
 ## Tech Stack
 
-- **Backend**: Python (Flask or FastAPI)  
+- **Backend**: Python (Flask)  
 - **Frontend**: HTML5, CSS3, JavaScript  
 - **Database**: SQLite  
 - **Tools**: Git, GitHub, VS Code  
