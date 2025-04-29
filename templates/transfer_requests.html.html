@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfer Requests</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        header {
+            background-color: #007bff;
+            padding: 10px;
+            text-align: center;
+            color: white;
+            font-size: 24px;
+        }
+        .container {
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        @media (max-width: 768px) {
+            input[type="text"], select, button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            nav {
+                flex-direction: column;
+            }
+            nav a {
+                margin-bottom: 10px;
+            }
+        }
+        /* Mobile-friendly menu */
+        .menu-icon {
+            display: none;
+            cursor: pointer;
+        }
+        .menu-icon div {
+            width: 30px;
+            height: 3px;
+            background-color: white;
+            margin: 5px 0;
+        }
+        nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background-color: #343a40;
+            padding: 10px;
+        }
+        nav a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        @media (max-width: 768px) {
+            .menu-icon {
+                display: block;
+                position: absolute;
+                top: 15px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        Transfer Requests
+    </header>
+
+    <!-- Mobile-friendly menu -->
+    <div class="menu-icon" onclick="toggleMenu()">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+
+    <nav>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/inventory">Inventory</a>
+        <a href="/reports">Reports</a>
+        <a href="/logout">Logout</a>
+    </nav>
+
+    <div class="container">
+        <h1>Request a Tire Transfer</h1>
+
+        <!-- Transfer Request Form -->
+        <form action="/transfer_tire" method="POST">
+            <label for="sku">Tire SKU:</label>
+            <input type="text" name="sku" id="sku" placeholder="Enter tire SKU" required>
+
+            <label for="new_location">New Location:</label>
+            <input type="text" name="new_location" id="new_location" placeholder="Enter new location" required>
+
+            <button type="submit">Submit Transfer Request</button>
+        </form>
+
+        <!-- Pending Transfer Requests Table -->
+        <h2>Pending Transfer Requests</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>SKU</th>
+                    <th>Size</th>
+                    <th>Brand</th>
+                    <th>Current Location</th>
+                    <th>New Location</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Placeholder for transfer requests data -->
+                {% for request in transfer_requests %}
+                <tr>
+                    <td>{{ request.sku }}</td>
+                    <td>{{ request.size }}</td>
+                    <td>{{ request.brand }}</td>
+                    <td>{{ request.current_location }}</td>
+                    <td>{{ request.new_location }}</td>
+                    <td>{{ request.status }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6">No transfer requests found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const nav = document.querySelector('nav');
+            nav.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block title %}Add New Inventory Item{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card p-4">
+        <h1 class="text-center mb-4">Add New Inventory Item</h1>
+        <form id="addItemForm">
+            <div class="form-group mb-3">
+                <label for="location_id">Location</label>
+                <select id="location_id" name="location_id" class="form-control" required>
+                    {% for location in locations %}
+                    <option value="{{ location.id }}">{{ location.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="sku">SKU</label>
+                <input type="text" id="sku" name="sku" placeholder="Enter tire SKU" class="form-control" required>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="tire_size">Tire Size</label>
+                <input type="text" id="tire_size" name="tire_size" placeholder="Enter tire size" class="form-control" required>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="speed_rating">Speed Rating</label>
+                <input type="text" id="speed_rating" name="speed_rating" placeholder="Enter speed rating" class="form-control" required>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="load_rating">Load Rating</label>
+                <input type="text" id="load_rating" name="load_rating" placeholder="Enter load rating" class="form-control" required>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="cost">Cost</label>
+                <input type="number" id="cost" name="cost" placeholder="Enter cost" class="form-control" required>
+            </div>
+
+
+            <div class="form-group mb-3">
+                <label for="quantity">Quantity</label>
+                <input type="number" id="quantity" name="quantity" placeholder="Enter quantity" class="form-control" required>
+            </div>
+
+            <!-- Barcode Scanner Buttons -->
+            <div class="text-center mb-3">
+                <button type="button" id="startScanner" class="btn btn-secondary">Start Barcode Scan</button>
+                <button type="button" id="stopScanner" class="btn btn-danger" style="display:none;">Stop Barcode Scan</button>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" id="submitItem" class="btn btn-primary mt-3">Add Item</button>
+            </div>
+        </form>
+
+        <!-- Video element for barcode scanning -->
+        <div id="interactive" class="viewport mt-3" style="width: 100%; height: 200px; display: none;"></div>
+    </div>
+</div>
+
+<!-- Include QuaggaJS for barcode scanning -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.11.6/quagga.min.js"></script>
+
+<script>
+    const startScannerButton = document.getElementById('startScanner');
+    const stopScannerButton = document.getElementById('stopScanner');
+    const videoContainer = document.getElementById('interactive');
+
+    // Initialize QuaggaJS
+    startScannerButton.addEventListener('click', function() {
+        videoContainer.style.display = 'block';
+        Quagga.init({
+            inputStream: {
+                name: "Live",
+                type: "LiveStream",
+                target: document.querySelector('#interactive'),
+                constraints: {
+                    width: 640,
+                    height: 480,
+                    facingMode: "environment"
+                }
+            },
+            decoder: {
+                readers: ["ean_reader", "upc_reader", "code_128_reader", "code_39_reader"]
+            }
+        }, function(err) {
+            if (err) {
+                console.error(err);
+                return;
+            }
+            console.log("Scanner started");
+            Quagga.start();
+            startScannerButton.style.display = 'none';
+            stopScannerButton.style.display = 'inline-block';
+        });
+
+        Quagga.onDetected(function(result) {
+    if (result && result.codeResult && result.codeResult.code) {
+        var code = result.codeResult.code;
+        document.getElementById('sku').value = code;
+        console.log("Barcode detected: ", code);
+        
+        fetch(`/fetch_tire_details/${code}`)
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    document.getElementById('tire_size').value = data.size || '';
+                    document.getElementById('speed_rating').value = data.speed_rating || '';
+                    document.getElementById('load_rating').value = data.load_rating || '';
+                    document.getElementById('cost').value = data.cost || '';
+                } else {
+                    console.error('API error: ', data.error);
+                }
+            })
+            .catch(err => console.error('Fetch error: ', err));
+
+        Quagga.stop();
+        videoContainer.style.display = 'none';
+        startScannerButton.style.display = 'inline-block';
+        stopScannerButton.style.display = 'none';
+    }
+});
+
+    });
+
+    // Stop QuaggaJS barcode scanning
+    stopScannerButton.addEventListener('click', function() {
+        Quagga.stop();
+        videoContainer.style.display = 'none';
+        startScannerButton.style.display = 'inline-block';
+        stopScannerButton.style.display = 'none';
+    });
+
+    // Handle form submission
+    document.getElementById('submitItem').addEventListener('click', function(event) {
+        event.preventDefault();
+        let sku = document.getElementById('sku').value;
+        let tireSize = document.getElementById('tire_size').value;
+        let locationId = document.getElementById('location_id').value;
+        let quantity = document.getElementById('quantity').value;
+
+        if (sku && tireSize && locationId && quantity) {
+            fetch('{{ url_for("add_item") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    sku: sku,
+                    tire_size: tireSize,
+                    location_id: locationId,
+                    quantity: quantity
+                })
+            }).then(response => {
+                if (response.ok) {
+                    alert('Item successfully added!');
+                } else {
+                    alert('Failed to add item.');
+                }
+            }).catch(err => console.log('Error:', err));
+        } else {
+            alert('Please fill out all fields.');
+        }
+    });
+</script>
+{% endblock %}

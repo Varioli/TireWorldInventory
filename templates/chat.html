@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+
+{% block title %}Chat{% endblock %}
+
+{% block content %}
+
+<style>
+    .chat-container {
+    display: flex;
+    flex-direction: row;
+    height: 80vh;
+}
+
+.sidebar {
+    width: 25%;
+    border-right: 1px solid #ddd;
+    padding: 15px;
+    background-color: #f9f9f9;
+}
+
+.sidebar h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+.sidebar li.online {
+    background-color: #e1f5e1;
+}
+
+.sidebar li.offline {
+    background-color: #f5f5f5;
+}
+
+.sidebar li a {
+    text-decoration: none;
+    color: #333;
+    width: 100%;
+}
+
+.status {
+    font-size: 12px;
+    font-weight: bold;
+    color: #555;
+}
+
+.status.online {
+    color: green;
+}
+
+.status.offline {
+    color: red;
+}
+
+.chat-area {
+    width: 75%;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.chat-header {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.messages {
+    flex-grow: 1;
+    padding: 10px;
+    overflow-y: scroll;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+}
+
+.message {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 60%;
+}
+
+.message.self {
+    background-color: #d4edda;
+    margin-left: auto;
+}
+
+.message.other {
+    background-color: #f1f0f0;
+    margin-right: auto;
+}
+
+.message strong {
+    display: block;
+    font-weight: bold;
+}
+
+.message small {
+    display: block;
+    font-size: 10px;
+    color: #888;
+    margin-top: 5px;
+}
+
+.message-form {
+    display: flex;
+    align-items: center;
+}
+
+.message-form textarea {
+    flex-grow: 1;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    margin-right: 10px;
+}
+
+.send-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.send-button:hover {
+    background-color: #0056b3;
+}
+
+</style>
+
+<h1>Chat</h1>
+<div class="chat-container">
+    <div class="sidebar">
+        <h3>Users</h3>
+        <ul>
+            {% for user in users %}
+            <li class="{% if user.is_online %}online{% else %}offline{% endif %}">
+                <a href="{{ url_for('chat', user_id=user.id) }}">
+                    {{ user.username }} 
+                    {% if user.is_online %}
+                    <span class="status online">Online</span>
+                    {% else %}
+                    <span class="status offline">Offline</span>
+                    {% endif %}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="chat-area">
+        {% if selected_user %}
+        <div class="chat-header">
+            <h3>Chat with {{ selected_user.username }}</h3>
+        </div>
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message {{ 'self' if message.sender.id == current_user.id else 'other' }}">
+                <strong>{{ message.sender.username }}:</strong> {{ message.content }}
+                <br>
+                <small>{{ message.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+            </div>
+            {% endfor %}
+        </div>
+        <form class="message-form" method="POST" action="{{ url_for('chat', user_id=selected_user.id) }}" style="display: flex; align-items: center; margin-top: 10px;">
+    <textarea name="content" rows="3" placeholder="Type your message..." required style="flex-grow: 1; padding: 10px; border-radius: 5px; border: 1px solid #ccc;"></textarea>
+    <button type="submit" class="send-button" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; margin-left: 10px;">Send</button>
+</form>
+
+        {% else %}
+        <div class="no-chat-selected">
+            <p>Please select a user to start chatting.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script type="text/javascript">
+    const socket = io();
+
+    socket.on('connect', function() {
+        // Send a join event to the server with the room name (e.g., a chat room)
+        socket.emit('join', {'username': '{{ current_user.username }}', 'room': 'general'});
+    });
+
+    socket.on('receive_message', function(data) {
+        // Append the received message to the chatbox
+        const chatBox = document.querySelector('.messages');
+        const newMessage = document.createElement('div');
+        newMessage.classList.add('message');
+        newMessage.innerHTML = `<strong>${data.username}:</strong> ${data.message}`;
+        chatBox.appendChild(newMessage);
+    });
+
+    document.querySelector('.send-button').addEventListener('click', function() {
+        const message = document.querySelector('textarea').value;
+        socket.emit('message', {'message': message, 'room': 'general'});
+        document.querySelector('textarea').value = '';
+    });
+</script>
+
+{% endblock %}

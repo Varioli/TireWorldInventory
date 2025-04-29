@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Warehouse Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Warehouse Dashboard</h1>
+
+    <h2>Pending Transfer Requests</h2>
+    {% if pending_transfers %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Transfer ID</th>
+                    <th>From Location</th>
+                    <th>To Location</th>
+                    <th>Item Name</th>
+                    <th>SKU</th>
+                    <th>Brand</th>
+                    <th>Model</th>
+                    <th>Quantity</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transfer in pending_transfers %}
+                <tr>
+                    <td>{{ transfer.id }}</td>
+                    <td>{{ transfer.from_location.name }}</td>
+                    <td>{{ transfer.to_location.name }}</td>
+                    <td>{{ transfer.item.item_name }}</td>
+                    <td>{{ transfer.item.sku }}</td>
+                    <td>{{ transfer.item.brand }}</td>
+                    <td>{{ transfer.item.model }}</td>
+                    <td>{{ transfer.quantity }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('warehouse_dashboard') }}">
+                            <input type="hidden" name="transfer_id" value="{{ transfer.id }}">
+                            <button type="submit" name="action" value="approve" class="btn btn-success">Approve</button>
+                            <button type="submit" name="action" value="decline" class="btn btn-danger">Decline</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No pending transfer requests.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .container {
+        margin-top: 30px;
+    }
+
+    h1, h2 {
+        color: #333333;
+    }
+
+    .table {
+        margin-top: 20px;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+        margin-right: 10px;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+</style>
+{% endblock %}

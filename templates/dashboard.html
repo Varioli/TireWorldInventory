@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome {current_user.username}{% endblock %}
+
+{% block content %}
+    <header>
+        Welcome {{current_user.username}}
+    </header>
+
+
+    <div class="content">
+        <h1>Dashboard</h1>
+        <p>Choose an action from the navigation menu or use the quick links below.</p>
+
+        <a href="/inventory" class="btn">View Inventory</a>
+        <a href="/request_transfer" class="btn">Manage Transfer Requests</a>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const nav = document.querySelector('nav');
+            nav.classList.toggle('active');
+        }
+    </script>
+</body>
+{% endblock %}

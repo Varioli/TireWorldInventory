@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Inventory Report{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Inventory Report</h1>
+    
+    <form method="GET" action="{{ url_for('inventory_report') }}">
+        <div class="form-group">
+            <label for="date">Select Date:</label>
+            <input type="date" id="date" name="date" class="form-control" value="{{ request.args.get('date', '') }}">
+        </div>
+        
+        <div class="form-group">
+            <label for="report_type">Report Type:</label>
+            <select id="report_type" name="report_type" class="form-control">
+                <option value="daily" {% if request.args.get('report_type') == 'daily' %}selected{% endif %}>Daily Sales</option>
+                <option value="pull_trends" {% if request.args.get('report_type') == 'pull_trends' %}selected{% endif %}>Pull Trends</option>
+                <option value="inventory_levels" {% if request.args.get('report_type') == 'inventory_levels' %}selected{% endif %}>Inventory Levels</option>
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Generate Report</button>
+    </form>
+
+    <hr>
+
+    {% if report_data %}
+        <h2>Report Results</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>SKU</th>
+                    <th>Item Name</th>
+                    <th>Quantity</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in report_data %}
+                    <tr>
+                        <td>{{ item.sku }}</td>
+                        <td>{{ item.item_name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.date }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <form method="POST" action="{{ url_for('export_report') }}">
+            <input type="hidden" name="date" value="{{ request.args.get('date', '') }}">
+            <input type="hidden" name="report_type" value="{{ request.args.get('report_type', '') }}">
+            <button type="submit" class="btn btn-success">Export Report</button>
+        </form>
+    {% else %}
+        <p>No data available for the selected criteria.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .container {
+        margin-top: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .table {
+        margin-top: 20px;
+    }
+
+    .btn {
+        display: inline-block;
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}

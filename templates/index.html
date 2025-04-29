@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome {current_user.username}{% endblock %}
+
+{% block content %}
+<h1>Welcome</h1>
+
+<div class="dashboard-stats">
+    <div class="stat">
+        <h2>Total Items in Inventory</h2>
+        <p>{{ total_items }}</p>
+    </div>
+    <div class="stat">
+        <h2>Total Quantity Across All Locations</h2>
+        <p>{{ total_quantity }}</p>
+    </div>
+</div>
+
+<div class="pending-transfers">
+    <h2>Pending Transfer Requests</h2>
+    {% if pending_transfers %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>From Location</th>
+                    <th>To Location</th>
+                    <th>Quantity</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transfer in pending_transfers %}
+                <tr>
+                    <td>{{ transfer.item.item_name }}</td>
+                    <td>{{ transfer.from_location.name }}</td>
+                    <td>{{ transfer.to_location.name }}</td>
+                    <td>{{ transfer.quantity }}</td>
+                    <td>{{ transfer.status }}</td>
+                    <td>
+                        {% if current_user.username == 'warehouse' %}
+                            <form method="POST" action="{{ url_for('warehouse_dashboard') }}">
+                                <input type="hidden" name="transfer_id" value="{{ transfer.id }}">
+                                <button type="submit" name="action" value="approve">Approve</button>
+                                <button type="submit" name="action" value="decline">Decline</button>
+                            </form>
+                        {% else %}
+                            <span>Awaiting Warehouse Approval</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No pending transfers at the moment.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .dashboard-stats {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 30px;
+    }
+
+    .stat {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat h2 {
+        margin-bottom: 15px;
+        font-size: 1.2em;
+        color: #333;
+    }
+
+    .stat p {
+        font-size: 2em;
+        color: #007BFF;
+    }
+
+    .pending-transfers {
+        margin-top: 20px;
+    }
+
+    .pending-transfers table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .pending-transfers th, .pending-transfers td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .pending-transfers th {
+        background-color: #007BFF;
+        color: white;
+    }
+
+    .pending-transfers button {
+        padding: 5px 10px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .pending-transfers button:hover {
+        background-color: #0056b3;
+    }
+</style>
+{% endblock %}

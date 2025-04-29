@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Chat with {{ recipient.username }}{% endblock %}
+
+{% block content %}
+<h1>Chat with {{ recipient.username }}</h1>
+<div class="chat-container">
+    <div class="messages">
+        {% for message in messages %}
+        <div class="message {% if message.sender_id == current_user.id %}outgoing{% else %}incoming{% endif %}">
+            <strong>{{ message.sender.username }}:</strong> {{ message.content }}<br>
+            <small>{{ message.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+        </div>
+        {% endfor %}
+    </div>
+    <form method="POST" action="{{ url_for('chat_with_user', user_id=recipient.id) }}">
+        <textarea name="content" rows="3" placeholder="Type your message here..." required></textarea>
+        <button type="submit">Send</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .chat-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background-color: #f4f4f4;
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    .messages {
+        max-height: 400px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+        background-color: #ffffff;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .message {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+    }
+
+    .outgoing {
+        background-color: #e1ffc7;
+        text-align: right;
+    }
+
+    .incoming {
+        background-color: #d4d4d4;
+    }
+
+    textarea {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+    }
+
+    button {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background-color: #007BFF;
+        border: none;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+</style>
+{% endblock %}

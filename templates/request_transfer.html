@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome {{ current_user.username }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Request a Tire Transfer</h1>
+
+    <!-- Tire Transfer Request Form -->
+    <form action="/transfer_tire" method="POST">
+        <div class="form-group">
+            <label for="sku">Tire SKU:</label>
+            <input type="text" name="sku" id="sku" placeholder="Enter tire SKU" class="form-control" required>
+            <ul id="suggestions" class="list-group"></ul>
+        </div>
+
+        <div class="form-group">
+            <label for="sending_location">Sending Location:</label>
+            <select name="sending_location" id="sending_location" class="form-control" required>
+                {% for location in locations %}
+                <option value="{{ location.id }}">{{ location.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="new_location">New Location:</label>
+            <select name="new_location" id="new_location" class="form-control" required>
+                {% for location in locations %}
+                <option value="{{ location.id }}">{{ location.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="quantity">Quantity:</label>
+            <input type="number" name="quantity" id="quantity" class="form-control" placeholder="Enter quantity" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit Transfer Request</button>
+    </form>
+
+    <!-- Pending Transfer Requests Table -->
+    <h2>Pending Transfer Requests</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>SKU</th>
+                <th>Size</th>
+                <th>Brand</th>
+                <th>Current Location</th>
+                <th>New Location</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in transfer_requests %}
+            <tr>
+                <td>{{ request.sku }}</td>
+                <td>{{ request.size }}</td>
+                <td>{{ request.brand }}</td>
+                <td>{{ request.current_location }}</td>
+                <td>{{ request.new_location }}</td>
+                <td>{{ request.status }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6">No transfer requests found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- JavaScript for SKU Suggestion -->
+<script>
+    document.getElementById('sku').addEventListener('input', function() {
+        const query = this.value;
+
+        if (query.length > 1) {
+            fetch(`/get_sku_suggestions?query=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    let suggestions = document.getElementById('suggestions');
+                    suggestions.innerHTML = '';  // Clear previous suggestions
+
+                    if (data.suggestions.length) {
+                        data.suggestions.forEach(item => {
+                            const listItem = document.createElement('li');
+                            listItem.classList.add('list-group-item');
+                            listItem.innerHTML = `<strong>${item.sku}</strong> <small class="text-muted">${item.size} + ${item.speed_load_rating}</small>`;
+                            suggestions.appendChild(listItem);
+                        });
+                    }
+                });
+        }
+    });
+</script>
+{% endblock %}

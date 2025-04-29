@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Reports</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        header {
+            background-color: #007bff;
+            padding: 10px;
+            text-align: center;
+            color: white;
+            font-size: 24px;
+        }
+        .container {
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        .report-summary {
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        @media (max-width: 768px) {
+            input[type="text"], select, button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        Inventory Reports
+    </header>
+
+    <div class="container">
+        <h1>Reports</h1>
+
+        <!-- Report Summary -->
+        <div class="report-summary">
+            <p><strong>Total Tires in Inventory:</strong> {{ report.total_tires }}</p>
+            <p><strong>Top Brands:</strong> {{ report.top_brands | join(', ') }}</p>
+            <p><strong>Locations:</strong> {{ report.locations | join(', ') }}</p>
+        </div>
+
+        <!-- Detailed Inventory Report Table -->
+        <h2>Detailed Inventory by Tire Size</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>SKU</th>
+                    <th>Size</th>
+                    <th>Brand</th>
+                    <th>Quantity</th>
+                    <th>Location</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Placeholder for detailed inventory data -->
+                {% for tire in tires %}
+                <tr>
+                    <td>{{ tire.sku }}</td>
+                    <td>{{ tire.size }}</td>
+                    <td>{{ tire.brand }}</td>
+                    <td>{{ tire.quantity }}</td>
+                    <td>{{ tire.location }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5">No inventory data found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

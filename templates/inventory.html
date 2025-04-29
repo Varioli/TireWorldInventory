@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome {current_user.username}{% endblock %}
+
+{% block content %}
+    <h1>Inventory for {{ location.name }}</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>SKU</th>
+            <th>Size</th>
+            <th>Brand</th>
+            <th>Quantity</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in inventory_items %}
+        <tr>
+            <td>{{ item.sku }}</td>
+            <td>{{ item.tire_size }}</td>
+            <td>{{ item.brand }}</td>
+            <td>{{ item.quantity }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4">No inventory found for this location.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

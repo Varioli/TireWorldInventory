@@ -1,0 +1,101 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    color: #333;
+}
+
+.container {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 90%;
+    max-width: 800px;
+}
+
+h1, h2 {
+    color: #00458a; /* Dark blue color matching the Tire World logo */
+    text-align: center;
+}
+
+.nav-menu {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.nav-menu a {
+    text-decoration: none;
+    color: #00458a;
+    padding: 10px 15px;
+    border: 2px solid transparent;
+    transition: 0.3s ease;
+    font-weight: bold;
+}
+
+.nav-menu a:hover {
+    border-bottom: 2px solid #ffba00; /* Yellow color from the logo */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+}
+
+table th {
+    background-color: #00458a;
+    color: white;
+}
+
+table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+table tr:hover {
+    background-color: #ddd;
+}
+
+button {
+    background-color: #00458a;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #003366;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+input[type="file"] {
+    padding: 5px;
+}
+
+video#scanner {
+    width: 100%;
+    border: 2px solid #00458a;
+    border-radius: 10px;
+    margin-top: 20px;
+}
