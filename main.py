@@ -9,7 +9,7 @@ from flask_login import UserMixin
 from barcode.writer import ImageWriter
 from models import db, InventoryItem, Location, User, TransferRequest
 from extensions import socketio
-import requests
+#import requests
 import os
 
 app = Flask(__name__, template_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)),'templates'))
